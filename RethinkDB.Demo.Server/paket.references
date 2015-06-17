@@ -1,0 +1,10 @@
+FsWebAddRegistryEntries
+Microsoft.AspNet.WebApi.Client
+Microsoft.AspNet.WebApi.Core
+Microsoft.AspNet.WebApi.Owin
+Microsoft.Owin
+Microsoft.Owin.Host.SystemWeb
+Microsoft.Owin.Diagnostics
+Newtonsoft.Json
+Owin
+MSBuild.Extension.Pack
