@@ -111,9 +111,6 @@
     </VisualStudio>
   </ProjectExtensions>
   <ItemGroup>
-    <Content Include="readme.txt">
-      <Paket>True</Paket>
-    </Content>
     <Compile Include="AssemblyInfo.fs" />
     <Content Include="Web.config" />
     <Compile Include="Startup.fs" />

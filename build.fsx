@@ -21,23 +21,27 @@ Target "BuildServer" (fun _ ->
     |> Log "Build-Output: "
 )
 
-Target "Deploy" (fun _ ->
+Target "ConfigIIS" (fun _ ->
     let siteName = "RethinkDBDemo"
     let appPool = "RethinkDBDemo.appPool"
     let port = ":81:"
-    CleanDir targetPath
 
-    CopyRecursive webBuildPath targetPath true
-    |> Log "Files copied: "
     (IIS
         (Site siteName "http" port @"C:\inetpub\wwwroot" appPool)
         (ApplicationPool appPool true "v4.0")
-        (Some(Application "" targetPath)))
+        (Some(Application "/" targetPath)))
+)
+
+Target "Deploy" (fun _ ->
+    CleanDir targetPath
+    CopyRecursive webBuildPath targetPath true
+    |> Log "Files copied: "
     System.Diagnostics.Process.Start("http://localhost:81/") |> ignore
 )
 
 "Clean"
   ==> "BuildServer"
+  =?> ("ConfigIIS", hasBuildParam "ConfigIIS")
   ==> "Deploy"
 
 RunTargetOrDefault "Deploy"
