@@ -28,3 +28,4 @@ type Startup() =
         builder.UseWebApi(config) |> ignore
         builder.UseErrorPage() |> ignore
         builder.UseWelcomePage() |> ignore
+        builder.MapSignalR() |> ignore

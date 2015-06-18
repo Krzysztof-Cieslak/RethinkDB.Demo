@@ -7,3 +7,4 @@ Microsoft.Owin.Diagnostics
 Newtonsoft.Json
 Owin
 MSBuild.Extension.Pack
+Microsoft.AspNet.SignalR.Core

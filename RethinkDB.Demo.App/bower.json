@@ -1,0 +1,21 @@
+{
+  "name": "RethinkDB.Demo.App",
+  "version": "0.0.0",
+  "homepage": "https://github.com/Krzysztof-Cieslak/RethinkDB.Demo",
+  "authors": [
+    "Krzysztof Cieślak <krzysztof_cieslak@windowslive.com>"
+  ],
+  "license": "Apache 2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "signalr": "~2.2.0",
+    "ract": "~0.13.3"
+  }
+}
