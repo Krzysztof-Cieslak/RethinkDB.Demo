@@ -1,5 +1,6 @@
 ﻿namespace RethinkDB.Demo.Client
 
+open FunScript.TypeScript.Mui
 open FunScript.TypeScript.React
 open FunScript.TypeScript
 open FunScript
@@ -23,7 +24,9 @@ module Message =
         Globals.createElement("div", attr,
             Globals.createElement("span", null, message))
 
-    let register () =
+    let register (material : mui, tm : ThemeManager) =
         let m = Message()
         m.``render <-``(fun _ -> JS.this |> render |> unbox<ReactElement<_>>)
+        m.``getChildContext <-``(fun _ -> [("muiTheme", tm.getCurrentTheme())] |> createObject :> obj )
+        m.childContextTypes <- ([("muiTheme", Globals.PropTypes._object.isRequired )] |> createObject :> obj)
         m |> React.registerComponent "Message"

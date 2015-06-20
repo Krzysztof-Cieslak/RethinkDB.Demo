@@ -1,17 +1,13 @@
 #r "packages/FAKE/tools/FakeLib.dll"
 #r "packages/FAKE.IIS/tools/Fake.IIS.dll"
-#r "Microsoft.Web.Administration"
 
 open Fake
-open Fake.IISHelper
 open Fake.AssemblyInfoFile
-
-
+open System
 
 let buildDir = "./build"
 let releaseDir = "./release"
 let applicationOutput = "RethinkDB.Demo.App"
-let targetPath =  @"c:\inetpub\wwwroot\RethinkDBDemo"
 
 let serverAppName = "RethinkDB.Demo.Server"
 let serverAppProj = "RethinkDB.Demo.Server.fsproj"
@@ -19,10 +15,15 @@ let serverAppProj = "RethinkDB.Demo.Server.fsproj"
 let clientGeneratorName = "RethinkDB.Demo.Client"
 let clientGeneratorProj = "RethinkDB.Demo.Client.fsproj"
 let clientGeneratorExe = buildDir @@ "RethinkDB.Demo.Client.exe"
-let clientGeneratorOutput = applicationOutput @@ "app.js"
+let clientGeneratorOutput = applicationOutput @@ "client.js"
 
 
 let webBuildPath = buildDir @@ "_PublishedWebsites" @@ serverAppName
+
+let browserify = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) @@ "npm" @@ "browserify.cmd"
+
+Target "ClientDev" DoNothing
+Target "ServerDev" DoNothing
 
 Target "Clean" (fun _ -> CleanDir buildDir)
 
@@ -43,37 +44,41 @@ Target "BuildClient" (fun _ ->
             info.FileName <- clientGeneratorExe
             info.Arguments <- clientGeneratorOutput) System.TimeSpan.MaxValue
     if result <> 0 then failwithf "Error during running ClientGenerator "
-
 )
 
-Target "CopyClient" (fun _ ->
+Target "Browserify" (fun _ ->
+    let result = ExecProcess (fun info ->
+            info.FileName <- browserify
+            info.WorkingDirectory <- applicationOutput
+            info.Arguments <- "client.js > app.js -r material-ui") System.TimeSpan.MaxValue
+    if result <> 0 then failwithf "Error during running ClientGenerator "
+)
+
+Target "CopyClientToBuildDir" (fun _ ->
     CopyRecursive applicationOutput  webBuildPath true
     |> Log "Files copied: "
 )
 
-Target "ConfigIIS" (fun _ ->
-    let siteName = "RethinkDBDemo"
-    let appPool = "RethinkDBDemo.appPool"
-    let port = ":81:"
-
-    (IIS
-        (Site siteName "http" port @"C:\inetpub\wwwroot" appPool)
-        (ApplicationPool appPool true "v4.0")
-        (Some(Application "/" targetPath)))
-)
 
 Target "Deploy" (fun _ ->
-    CleanDir targetPath
-    CopyRecursive webBuildPath targetPath true
+    CleanDir applicationOutput
+    CopyRecursive webBuildPath applicationOutput true
     |> Log "Files copied: "
     System.Diagnostics.Process.Start("http://localhost:81/index.html") |> ignore
 )
 
 "Clean"
-  ==> "BuildServer"
-  ==> "BuildClient"
-  ==> "CopyClient"
-  =?> ("ConfigIIS", hasBuildParam "ConfigIIS")
+   ==> "BuildServer"   
+   ==> "Deploy"
+   ==> "ServerDev"
+
+
+"BuildClient"
+  ==> "Browserify"
+  ==> "ClientDev"
+  ==> "CopyClientToBuildDir"
   ==> "Deploy"
+
+
 
 RunTargetOrDefault "Deploy"

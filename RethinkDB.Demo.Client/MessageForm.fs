@@ -1,11 +1,13 @@
 ﻿namespace RethinkDB.Demo.Client
 
-open FunScript.TypeScript.React
-open FunScript.TypeScript
 open FunScript
+open FunScript.TypeScript
+open FunScript.TypeScript.Mui
+open FunScript.TypeScript.React
 open Helpers
-open System.Collections.Generic
 open System
+open System.Collections.Generic
+
 
 [<ReflectedDefinition>]
 module MessageForm =
@@ -15,27 +17,44 @@ module MessageForm =
         interface ComponentSpec<MessageFormProps, MessageFormState>
         interface Component<MessageFormProps, MessageFormState>
 
-    let private handleSubmit (cf : MessageForm) (e : FormEvent) =
-        e.preventDefault()
-        let author = Globals.findDOMNode(cf.refs.["author"])
-        let text = Globals.findDOMNode(cf.refs.["text"])
+    let private handleSay (cf : MessageForm) (e : _ ) =
+        let author = cf.refs.["author"]
+        let text = cf.refs.["text"]
         //TODO - change to messaging
-        cf.props.onMessageSubmit {Message.Date = DateTime.Now; Message.Author = author.value.Trim(); Message.Text = text.value.Trim() }
-        author.value <- ""
-        text.value <- ""
+        cf.props.onMessageSubmit { Message.Date = DateTime.Now;
+                                   Message.Author = author.getValue().ToString().Trim();
+                                   Message.Text = text.getValue().ToString().Trim() }
+        author.setValue("")
+        text.setValue("")
 
-    let private render (cf : MessageForm) =
-        let attr = [("className", unbox<obj>("MessageForm")); ("onSubmit", unbox<obj>(handleSubmit cf) )] |> createObject
-        let attr2 = [("type", "text"); ("placeholder", "Your name"); ("ref", "author")] |> createObject
-        let attr3 = [("type", "text"); ("placeholder", "Say something..."); ("ref", "text")] |> createObject
-        let attr4 = [("type", "submit"); ("value", "Post");] |> createObject
+    let private render (m : mui) (cf : MessageForm) =
+        let attr =  ["className" ==> "MessageForm" ] |> createObject
+        let attr2 = ["className" ==> "nameTextBox"
+                     "type" ==> "text"
+                     "hintText" ==> "Your name"
+                     "ref" ==> "author"] |> createObject
+        let attr3 = ["type" ==> "text"
+                     "className" ==> "messageTextBox"
+                     "hintText" ==> "Say something..."
+                     "ref" ==> "text"] |> createObject
+        let attr4 = ["type" ==> "submit"
+                     "className" ==> "sayButton"
+                     "value" ==> "Post"
+                     "label" ==> "Say"
+                     "onMouseDown" ==> (handleSay cf)] |> createObject
 
-        Globals.createElement("form", attr,
-            Globals.createElement("input", attr2),
-            Globals.createElement("input", attr3),
-            Globals.createElement("input", attr4))
 
-    let register () =
+        let Button = m.RaisedButton
+        let TextField = m.TextField
+
+        Globals.createElement("div", attr,
+            Globals.createElement(TextField, attr2),
+            Globals.createElement(TextField, attr3),
+            Globals.createElement(Button, attr4))
+
+    let register (material : mui, tm : ThemeManager) =
         let mf = MessageForm()
-        mf.``render <-``(fun _ -> JS.this |> render |> unbox<ReactElement<_>>)
+        mf.``render <-``(fun _ -> JS.this |> render material |> unbox<ReactElement<_>>)
+        mf.``getChildContext <-``(fun _ -> [("muiTheme", tm.getCurrentTheme())] |> createObject :> obj )
+        mf.childContextTypes <- ([("muiTheme", Globals.PropTypes._object.isRequired )] |> createObject :> obj)
         mf |> React.registerComponent "MessageForm"

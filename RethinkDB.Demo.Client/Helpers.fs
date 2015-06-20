@@ -24,6 +24,8 @@ module Helpers =
         let t = Dictionary<string,obj>()
         lst |> List.iter(fun i -> t.Add(fst i, snd i ))
         t
+    
+    let (==>) a b = a, box<obj> b
 
     module React =
         let private classContainer = new Dictionary<string, ComponentClass<obj>>()
@@ -34,7 +36,3 @@ module Helpers =
 
         let getComponent name =
             classContainer.[name] |> unbox<ComponentClass<'T>>
-
-    module MaterialUI =
-
-        let mui = JS.require<obj> "mui"

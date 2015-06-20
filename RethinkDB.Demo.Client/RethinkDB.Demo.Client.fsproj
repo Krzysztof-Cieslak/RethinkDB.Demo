@@ -199,6 +199,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Helpers.fs" />
+    <Compile Include="MaterialUIBindings.fs" />
     <Compile Include="Message.fs" />
     <Compile Include="MessageList.fs" />
     <Compile Include="MessageForm.fs" />

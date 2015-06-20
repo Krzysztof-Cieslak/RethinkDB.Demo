@@ -2,6 +2,7 @@
 
 open FunScript.TypeScript.React
 open FunScript.TypeScript
+open FunScript.TypeScript.Mui
 open FunScript
 open Helpers
 open System.Collections.Generic
@@ -23,8 +24,10 @@ module MessageList =
         Globals.createElement("div", attr, messageNodes )
 
 
-    let register () =
+    let register (material : mui, tm : ThemeManager) =
         let ml = MessageList ()
         ml.``render <-``(fun _ -> JS.this |> render |> unbox<ReactElement<_>>)
+        ml.``getChildContext <-``(fun _ -> [("muiTheme", tm.getCurrentTheme())] |> createObject :> obj )
+        ml.childContextTypes <- ([("muiTheme", Globals.PropTypes._object.isRequired )] |> createObject :> obj)
         //TODO - register event handler
         ml |> React.registerComponent "MessageList"
