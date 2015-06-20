@@ -196,3 +196,5 @@ FakesAssemblies/
 *.opt
 
 .paket/paket.exe
+app.js
+client.js

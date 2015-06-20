@@ -12,6 +12,7 @@ open System
 module App =
 
     let app () =
+        do JS.require "React"
         do Message.register()
         do MessageList.register()
         do MessageForm.register()

@@ -15,7 +15,10 @@ module Helpers =
 
     module JS =
         [<JSEmitInline("this")>]
-        let this<'O> :  'O = failwith "JS"
+        let this<'O> :  'O = failwith "never"
+
+        [<FunScript.JSEmitInline("require({0})")>]
+        let require (path : string) : 'T = failwith "never"
 
     let createObject (lst : list<string * 'a>) =
         let t = Dictionary<string,obj>()
@@ -25,11 +28,13 @@ module Helpers =
     module React =
         let private classContainer = new Dictionary<string, ComponentClass<obj>>()
 
-
-
         let registerComponent name (cmpnt : obj) =
             let cl = Globals.createClass(unbox<ComponentSpec<_,_>>(cmpnt))
             classContainer.Add(name, cl)
 
         let getComponent name =
-            classContainer.[name]
+            classContainer.[name] |> unbox<ComponentClass<'T>>
+
+    module MaterialUI =
+
+        let mui = JS.require<obj> "mui"

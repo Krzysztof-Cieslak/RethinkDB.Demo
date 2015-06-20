@@ -19,7 +19,7 @@ let serverAppProj = "RethinkDB.Demo.Server.fsproj"
 let clientGeneratorName = "RethinkDB.Demo.Client"
 let clientGeneratorProj = "RethinkDB.Demo.Client.fsproj"
 let clientGeneratorExe = buildDir @@ "RethinkDB.Demo.Client.exe"
-let clientGeneratorOutput = applicationOutput @@ "app" @@ "app.js"
+let clientGeneratorOutput = applicationOutput @@ "app.js"
 
 
 let webBuildPath = buildDir @@ "_PublishedWebsites" @@ serverAppName
@@ -46,6 +46,11 @@ Target "BuildClient" (fun _ ->
 
 )
 
+Target "CopyClient" (fun _ ->
+    CopyRecursive applicationOutput  webBuildPath true
+    |> Log "Files copied: "
+)
+
 Target "ConfigIIS" (fun _ ->
     let siteName = "RethinkDBDemo"
     let appPool = "RethinkDBDemo.appPool"
@@ -61,12 +66,13 @@ Target "Deploy" (fun _ ->
     CleanDir targetPath
     CopyRecursive webBuildPath targetPath true
     |> Log "Files copied: "
-    System.Diagnostics.Process.Start("http://localhost:81/") |> ignore
+    System.Diagnostics.Process.Start("http://localhost:81/index.html") |> ignore
 )
 
 "Clean"
   ==> "BuildServer"
   ==> "BuildClient"
+  ==> "CopyClient"
   =?> ("ConfigIIS", hasBuildParam "ConfigIIS")
   ==> "Deploy"
 
