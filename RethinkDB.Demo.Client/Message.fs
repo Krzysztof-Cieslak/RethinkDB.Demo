@@ -19,7 +19,8 @@ module Message =
     let private render (c : Message) =
         let attr = [("className", "message")] |> createObject
         let dt = c.props.Date
-        let message = sprintf "[%d2:%d2] %s : %s" dt.Hour dt.Minute c.props.Author c.props.Text
+        let z= dt.ToShortTimeString()
+        let message = sprintf "[%s] %s : %s" z c.props.Author c.props.Text
 
         Globals.createElement("div", attr,
             Globals.createElement("span", null, message))

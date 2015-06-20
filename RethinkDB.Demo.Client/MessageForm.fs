@@ -41,6 +41,7 @@ module MessageForm =
                      "className" ==> "sayButton"
                      "value" ==> "Post"
                      "label" ==> "Say"
+                     "primary" ==> true
                      "onMouseDown" ==> (handleSay cf)] |> createObject
 
 
