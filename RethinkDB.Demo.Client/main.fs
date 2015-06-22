@@ -7,7 +7,9 @@ module Generator =
     [<EntryPoint>]
     let main argv =
         let code = Compiler.compileWithoutReturn(<@@ RethinkDB.Demo.Client.App.app() @@>)
-        let code' = "var React = require('react')\n" + code
+        let code' = "var React = require('react');\n" +
+                    "window.postal = require('postal');\n" +
+                    code
         File.WriteAllText(argv.[0], code')
         printfn "%A" argv
         0 // return an integer exit code
