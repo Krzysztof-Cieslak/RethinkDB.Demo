@@ -5,6 +5,7 @@ nuget FAKE.IIS
 nuget FunScript
 nuget FunScript.TypeScript.Binding.jquery
 nuget FunScript.TypeScript.Binding.signalr
+nuget FunScript.TypeScript.Binding.underscore
 nuget MSBuild.Extension.Pack
 nuget Microsoft.AspNet.SignalR.Core
 nuget Microsoft.AspNet.WebApi.Client

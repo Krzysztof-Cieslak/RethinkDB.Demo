@@ -61,14 +61,14 @@ Target "CopyClientToBuildDir" (fun _ ->
 
 
 Target "Deploy" (fun _ ->
-    CleanDir applicationOutput
+    CleanDir (applicationOutput @@ "bin" )
     CopyRecursive webBuildPath applicationOutput true
     |> Log "Files copied: "
     System.Diagnostics.Process.Start("http://localhost:81/index.html") |> ignore
 )
 
 "Clean"
-   ==> "BuildServer"   
+   ==> "BuildServer"
    ==> "Deploy"
    ==> "ServerDev"
 

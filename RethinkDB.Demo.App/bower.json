@@ -15,7 +15,6 @@
   ],
   "dependencies": {
     "jquery": "~2.1.4",
-    "signalr": "~2.2.0",
-    "ract": "~0.13.3"
+    "signalr": "~2.2.0"
   }
 }

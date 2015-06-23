@@ -7,11 +7,14 @@ open Helpers
 open System.Collections.Generic
 open System
 
+open SignalRProvider
+
 
 [<ReflectedDefinition>]
 module App =
+    let signalR = Globals.Dollar.signalR
 
-    let app () =
+    let bootstrapReact () =
         let m = JS.require<Mui.mui> "material-ui"
         let tm = m.Styles.ThemeManager()
 
@@ -19,7 +22,21 @@ module App =
         do MessageList.register(m, tm)
         do MessageForm.register(m, tm)
         do Chat.register(m, tm)
-        React.getComponent "Chat"
-        |> Globals.createElement
-        |> fun e ->  Globals.render(e, Globals.document.getElementById("example"))
-        |> ignore
+        do React.getComponent "Chat"
+            |> Globals.createElement
+            |> fun e ->  Globals.render(e, Globals.document.getElementById("example"))
+            |> ignore
+
+    let bootstrapSignalR () =
+        signalR.hub.url <- "http://localhost:81/ChatHub"
+        let serverHub = new Hubs.ChatHub(signalR.hub)
+        let clientHub = new Hubs.ChatClientHub()
+
+        clientHub.Send <- (fun msg -> Globals.console.log msg )
+        clientHub.Register(signalR.hub )
+        signalR.hub.start () |> ignore
+        ()
+
+    let app () =
+        do bootstrapReact ()
+        do bootstrapSignalR ()
