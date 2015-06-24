@@ -16,6 +16,8 @@ type ChatHub() =
 
     member this.SendMessage msg =
         this.Clients.All.Send(msg)
+        this.Clients.All.Send({msg with Message = msg.Message + "2"})
+        "Message Send"
 
 module Brodcaster =
     let context = GlobalHost.ConnectionManager.GetHubContext<ChatHub, IChatClientHub>()

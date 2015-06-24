@@ -8,6 +8,7 @@ open System.Collections.Generic
 open System
 
 open SignalRProvider
+open SignalRProvider.Types
 
 
 [<ReflectedDefinition>]
@@ -28,13 +29,15 @@ module App =
             |> ignore
 
     let bootstrapSignalR () =
-        signalR.hub.url <- "http://localhost:81/ChatHub"
+        signalR.hub.url <- "http://localhost:81/signalr"
         let serverHub = new Hubs.ChatHub(signalR.hub)
         let clientHub = new Hubs.ChatClientHub()
 
         clientHub.Send <- (fun msg -> Globals.console.log msg )
         clientHub.Register(signalR.hub )
-        signalR.hub.start () |> ignore
+        signalR.hub.start()._done((fun _ ->
+            serverHub.SendMessage(``RethinkDB!Demo!Server!ChatMessage``(Date = System.DateTime.Now, Nick = "aaa", Message = ""))
+        ) |> unbox<JQueryPromiseCallback<obj>>) |> ignore
         ()
 
     let app () =
