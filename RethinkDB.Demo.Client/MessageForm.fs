@@ -11,7 +11,7 @@ open System.Collections.Generic
 
 [<ReflectedDefinition>]
 module MessageForm =
-    type MessageFormProps = { onMessageSubmit : Message.MessageProps -> unit }
+    type MessageFormProps () = class end
     type MessageFormState () = class end
     type MessageForm () =
         interface ComponentSpec<MessageFormProps, MessageFormState>
@@ -20,10 +20,18 @@ module MessageForm =
     let private handleSay (cf : MessageForm) (e : _ ) =
         let author = cf.refs.["author"]
         let text = cf.refs.["text"]
-        //TODO - change to messaging
-        cf.props.onMessageSubmit { Message.Date = DateTime.Now;
-                                   Message.Author = author.getValue().ToString().Trim();
-                                   Message.Text = text.getValue().ToString().Trim() }
+
+        let msg = { Message.Date = DateTime.Now;
+                    Message.Author = author.getValue().ToString().Trim();
+                    Message.Text = text.getValue().ToString().Trim() }
+
+        createEmpty<PostalEnvelope> ()
+        |> fun n -> n.topic <- "message.new"
+                    n.data <- msg
+                    n
+        |> Globals.postal.publish
+        |> ignore
+
         author.setValue("")
         text.setValue("")
 

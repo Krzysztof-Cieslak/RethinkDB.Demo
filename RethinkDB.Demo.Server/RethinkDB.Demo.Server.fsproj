@@ -30,6 +30,8 @@
     <PlatformTarget>
     </PlatformTarget>
     <ConsolePause>false</ConsolePause>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

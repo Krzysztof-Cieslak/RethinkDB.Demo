@@ -9,7 +9,9 @@ open System
 
 open SignalRProvider
 open SignalRProvider.Types
+open SignalRProvider.Hubs
 
+type ChatMessage = ``RethinkDB!Demo!Server!ChatMessage``
 
 [<ReflectedDefinition>]
 module App =
@@ -33,13 +35,33 @@ module App =
         let serverHub = new Hubs.ChatHub(signalR.hub)
         let clientHub = new Hubs.ChatClientHub()
 
-        clientHub.Send <- (fun msg -> Globals.console.log msg )
+
         clientHub.Register(signalR.hub )
-        signalR.hub.start()._done((fun _ ->
-            serverHub.SendMessage(``RethinkDB!Demo!Server!ChatMessage``(Date = System.DateTime.Now, Nick = "aaa", Message = ""))
-        ) |> unbox<JQueryPromiseCallback<obj>>) |> ignore
-        ()
+        signalR.hub.start() |> ignore
+        clientHub,serverHub
+
+    let registerSingalR (cHub : ChatClientHub) (sHub : ChatHub) =
+        let options = createEmpty<PostalSubscriptionDefinition>()
+                      |> fun n -> n.topic <- "message.new"
+                                  n.callback <- Func<_,_,_>(fun n msg ->
+                                      msg.data
+                                      |> unbox<Message.MessageProps>
+                                      |> fun a -> sHub.SendMessage(ChatMessage(Nick = a.Author, Message = a.Text));
+                                      |> ignore :> obj)
+                                  n
+        Globals.postal.subscribe(options)  |> ignore
+
+
+        cHub.Send <- fun a ->
+            createEmpty<PostalEnvelope> ()
+            |> fun n -> n.topic <- "message.recived"
+                        n.data <- {Message.Date = DateTime.Now; Message.Author = a.Nick; Message.Text = a.Message}
+                        n
+            |> Globals.postal.publish
+            |> ignore
 
     let app () =
         do bootstrapReact ()
-        do bootstrapSignalR ()
+        let cHub, sHub =  bootstrapSignalR ()
+        do registerSingalR cHub sHub
+        ()

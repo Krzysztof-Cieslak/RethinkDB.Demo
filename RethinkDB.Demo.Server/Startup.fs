@@ -12,21 +12,6 @@ open Microsoft.AspNet.SignalR
 [<Sealed>]
 type Startup() =
 
-    static member RegisterWebApi(config: HttpConfiguration) =
-        // Configure routing
-        config.MapHttpAttributeRoutes()
-
-        // Configure serialization
-        config.Formatters.XmlFormatter.UseXmlSerializer <- true
-        config.Formatters.JsonFormatter.SerializerSettings.ContractResolver <- Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
-
-        // Additional Web API settings
-
     member __.Configuration(builder: IAppBuilder) =
-        //let config = new HttpConfiguration()
-
-        //builder.UseWebApi(config) |> ignore
-        //builder.UseErrorPage() |> ignore
-        //builder.UseWelcomePage() |> ignore
+        //let broadcaster = new Broadcaster()
         builder.MapSignalR() |> ignore
-        //Startup.RegisterWebApi(config)

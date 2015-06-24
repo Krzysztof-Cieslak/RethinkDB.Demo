@@ -24,7 +24,8 @@ let browserify = Environment.GetFolderPath(Environment.SpecialFolder.Application
 Target "ClientDev" DoNothing
 Target "ServerDev" DoNothing
 
-Target "Clean" (fun _ -> CleanDir buildDir)
+Target "Clean" (fun _ -> CleanDir buildDir
+                         DeleteDir buildDir)
 
 Target "BuildServer" (fun _ ->
     RestorePackages()

@@ -29,5 +29,4 @@ module MessageList =
         ml.``render <-``(fun _ -> JS.this |> render |> unbox<ReactElement<_>>)
         ml.``getChildContext <-``(fun _ -> [("muiTheme", tm.getCurrentTheme())] |> createObject :> obj )
         ml.childContextTypes <- ([("muiTheme", Globals.PropTypes._object.isRequired )] |> createObject :> obj)
-        //TODO - register event handler
         ml |> React.registerComponent "MessageList"
