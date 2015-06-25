@@ -24,17 +24,22 @@ let browserify = Environment.GetFolderPath(Environment.SpecialFolder.Application
 
 
 Target "Default" DoNothing
+Target "DevClient" DoNothing
 
-Target "BuildServer" (fun _ ->
-    !! (serverAppName @@ serverAppProj)
-    |> MSBuildRelease buildDir "Build"
-    |> fun lst ->
-        killProcess "RethinkDB.Demo.Suave"
-        !! (applicationOutput @@ "*.*") -- (applicationOutput @@ "index.html")|> DeleteFiles
-        CopyFiles (applicationOutput) lst
+let SuaveStarter (f : unit -> unit) =
+    killProcess "RethinkDB.Demo.Suave"
+    f ()
     Diagnostics.ProcessStartInfo(FileName = serverExe, WorkingDirectory = applicationOutput )
     |> Diagnostics.Process.Start
     |> ignore
+
+Target "BuildServer" (fun _ ->
+    SuaveStarter(fun _ ->
+        !! (serverAppName @@ serverAppProj)
+        |> MSBuildRelease buildDir "Build"
+        |> fun lst ->
+            !! (applicationOutput @@ "*.*") -- (applicationOutput @@ "index.html")|> DeleteFiles
+            CopyFiles (applicationOutput) lst)
 )
 
 Target "BuildClient" (fun _ ->
@@ -49,16 +54,18 @@ Target "BuildClient" (fun _ ->
 )
 
 Target "Browserify" (fun _ ->
+    SuaveStarter(fun _ ->
     let result = ExecProcess (fun info ->
             info.FileName <- browserify
             info.WorkingDirectory <- applicationOutput @@ "client"
             info.Arguments <- "client.js > app.js -r material-ui") System.TimeSpan.MaxValue
-    if result <> 0 then failwithf "Error during running ClientGenerator "
+    if result <> 0 then failwithf "Error during running ClientGenerator ")
 )
 
 
 "BuildClient"
   ==> "Browserify"
+  ==> "DevClient"
   ==> "Default"
 
 "BuildServer"

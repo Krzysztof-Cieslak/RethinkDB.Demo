@@ -23,6 +23,22 @@ module App =
             |> fun e ->  Globals.render(e, Globals.document.getElementById("example"))
             |> ignore
 
+    let registerWebSocket () =
+        let ws = Globals.WebSocket.Create "ws://localhost:8083/websocket"
+        ws.addEventListener_message(fun e -> Globals.console.log e :> obj)
+
+        let options = createEmpty<PostalSubscriptionDefinition>()
+                      |> fun n -> n.topic <- "message.new"
+                                  n.callback <- Func<_,_,_>(fun n msg ->
+                                      msg.data
+                                      |> unbox<Message.MessageProps>
+                                      |> fun a -> a |> Globals.JSON.stringify |> ws.send 
+                                      |> ignore :> obj)
+                                  n
+        Globals.postal.subscribe(options)  |> ignore
+
     let app () =
         do bootstrapReact ()
+        do registerWebSocket ()
+
         ()

@@ -16,26 +16,36 @@ open Suave.Sockets
 open Suave.Sockets.Control
 open Suave.WebSocket
 
+open System.Collections.Generic
+
 module Suave =
+    let clients = List()
+
     let echo (webSocket : WebSocket) =
-        fun cx -> socket {
-            let loop = ref true
-            while !loop do
-                let! msg = webSocket.read()
-                match msg with
-                | (Text, data, true) ->
-                    let str = UTF8.toString data
-                    do! webSocket.send Text data true
-                | (Ping, _, _) -> do! webSocket.send Pong [||] true
-                | (Close, _, _) ->
-                    do! webSocket.send Close [||] true
-                    loop := false
-                | _ -> ()
-            }
+        fun cx ->
+            clients.Add webSocket
+            socket {
+                let loop = ref true
+                while !loop do
+                    let! msg = webSocket.read()
+                    match msg with
+                    | (Text, data, true) ->
+                        let str = UTF8.toString data
+                        printfn "%s" str
+                        clients |> Seq.iter (fun w -> 
+                            w.send Text data true |> Async.Ignore |> Async.Start
+                        )
+                    | (Ping, _, _) -> do! webSocket.send Pong [||] true
+                    | (Close, _, _) ->
+                        do! webSocket.send Close [||] true
+                        loop := false
+                    | _ -> ()
+                }
 
     let app : WebPart =
         choose [ path "/websocket" >>= handShake echo
-                 GET >>= choose [ path "/" >>= file "index.html"
+                 GET >>= choose [ path "/" >>= request(fun n -> printfn "%A" n.ipaddr
+                                                                file "index.html")
                                   browseHome ]
                  NOT_FOUND "Found no handlers." ]
 
