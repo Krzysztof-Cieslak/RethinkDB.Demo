@@ -34,8 +34,9 @@ module Suave =
             }
 
     let app : WebPart =
-        choose [ //path "/websocket" >>= handShake echo
-                 GET >>= path "/" >>= file "/client/index.html"
+        choose [ path "/websocket" >>= handShake echo
+                 GET >>= choose [ path "/" >>= file "index.html"
+                                  browseHome ]
                  NOT_FOUND "Found no handlers." ]
 
     [<EntryPoint>]

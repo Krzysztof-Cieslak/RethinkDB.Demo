@@ -16,7 +16,7 @@ let clientGeneratorName = "RethinkDB.Demo.Client"
 let clientGeneratorProj = "RethinkDB.Demo.Client.fsproj"
 let clientGeneratorExe = buildDir @@ "RethinkDB.Demo.Client.exe"
 let clientGeneratorOutput = applicationOutput @@ "client" @@ "client.js"
-let serverExe = applicationOutput  @@ "RethinkDB.Demo.Suave.exe"
+let serverExe ="RethinkDB.Demo.Suave.exe"
 
 let webBuildPath = buildDir @@ "_PublishedWebsites" @@ serverAppName
 
@@ -30,9 +30,11 @@ Target "BuildServer" (fun _ ->
     |> MSBuildRelease buildDir "Build"
     |> fun lst ->
         killProcess "RethinkDB.Demo.Suave"
-        !! (applicationOutput @@ "*.*") |> DeleteFiles
+        !! (applicationOutput @@ "*.*") -- (applicationOutput @@ "index.html")|> DeleteFiles
         CopyFiles (applicationOutput) lst
-    Diagnostics.Process.Start serverExe |> ignore
+    Diagnostics.ProcessStartInfo(FileName = serverExe, WorkingDirectory = applicationOutput )
+    |> Diagnostics.Process.Start
+    |> ignore
 )
 
 Target "BuildClient" (fun _ ->

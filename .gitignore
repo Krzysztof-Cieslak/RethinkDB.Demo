@@ -200,3 +200,5 @@ app.js
 client.js
 docker.info
 RethinkDB.Demo.App/*.*
+!RethinkDB.Demo.App/index.html
+RethinkDB.Demo.App/_temporary_compressed_files
