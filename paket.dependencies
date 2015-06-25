@@ -12,7 +12,10 @@ nuget Microsoft.AspNet.WebApi.Client
 nuget Microsoft.AspNet.WebApi.Core
 nuget Microsoft.AspNet.WebApi.Owin
 nuget Microsoft.Owin
+nuget Microsoft.Owin.Cors
 nuget Microsoft.Owin.Host.SystemWeb
 nuget Newtonsoft.Json
 nuget Owin
 nuget FSharp.Core
+nuget rethinkdb-net
+nuget rethinkdb-net-newtonsoft

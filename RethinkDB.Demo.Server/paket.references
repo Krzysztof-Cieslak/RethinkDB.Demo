@@ -8,3 +8,6 @@ Owin
 MSBuild.Extension.Pack
 Microsoft.AspNet.SignalR.Core
 Microsoft.AspNet.SignalR.SystemWeb
+rethinkdb-net
+rethinkdb-net-newtonsoft
+Microsoft.Owin.Cors

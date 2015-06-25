@@ -198,3 +198,4 @@ FakesAssemblies/
 .paket/paket.exe
 app.js
 client.js
+docker.info

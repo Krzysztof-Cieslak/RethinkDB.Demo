@@ -31,7 +31,8 @@ module App =
             |> ignore
 
     let bootstrapSignalR () =
-        signalR.hub.url <- "http://localhost:81/signalr"
+        signalR.hub.url <- "http://localhost:48213/signalr"
+        //signalR.hub.url <- "http://localhost:81/signalr"
         let serverHub = new Hubs.ChatHub(signalR.hub)
         let clientHub = new Hubs.ChatClientHub()
 
