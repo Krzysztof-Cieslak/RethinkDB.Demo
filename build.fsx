@@ -9,33 +9,33 @@ let buildDir = "./build"
 let releaseDir = "./release"
 let applicationOutput = "RethinkDB.Demo.App"
 
-let serverAppName = "RethinkDB.Demo.Server"
-let serverAppProj = "RethinkDB.Demo.Server.fsproj"
+let serverAppName = "RethinkDB.Demo.Suave"
+let serverAppProj = "RethinkDB.Demo.Suave.fsproj"
 
 let clientGeneratorName = "RethinkDB.Demo.Client"
 let clientGeneratorProj = "RethinkDB.Demo.Client.fsproj"
 let clientGeneratorExe = buildDir @@ "RethinkDB.Demo.Client.exe"
-let clientGeneratorOutput = applicationOutput @@ "client.js"
+let clientGeneratorOutput = applicationOutput @@ "client" @@ "client.js"
+let serverExe = applicationOutput  @@ "RethinkDB.Demo.Suave.exe"
 
 let webBuildPath = buildDir @@ "_PublishedWebsites" @@ serverAppName
 
 let browserify = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) @@ "npm" @@ "browserify.cmd"
 
-Target "ClientDev" DoNothing
-Target "ServerDev" DoNothing
 
-Target "Clean" (fun _ -> CleanDir buildDir
-                         DeleteDir buildDir)
+Target "Default" DoNothing
 
 Target "BuildServer" (fun _ ->
-    RestorePackages()
     !! (serverAppName @@ serverAppProj)
     |> MSBuildRelease buildDir "Build"
-    |> Log "Build-Output: "
+    |> fun lst ->
+        killProcess "RethinkDB.Demo.Suave"
+        !! (applicationOutput @@ "*.*") |> DeleteFiles
+        CopyFiles (applicationOutput) lst
+    Diagnostics.Process.Start serverExe |> ignore
 )
 
 Target "BuildClient" (fun _ ->
-    RestorePackages()
     !! (clientGeneratorName @@ clientGeneratorProj)
     |> MSBuildRelease buildDir "Build"
     |> Log "Build-Output: "
@@ -49,32 +49,17 @@ Target "BuildClient" (fun _ ->
 Target "Browserify" (fun _ ->
     let result = ExecProcess (fun info ->
             info.FileName <- browserify
-            info.WorkingDirectory <- applicationOutput
+            info.WorkingDirectory <- applicationOutput @@ "client"
             info.Arguments <- "client.js > app.js -r material-ui") System.TimeSpan.MaxValue
     if result <> 0 then failwithf "Error during running ClientGenerator "
 )
 
-Target "CopyClientToBuildDir" (fun _ ->
-    CopyRecursive applicationOutput  webBuildPath true
-    |> Log "Files copied: "
-)
-
-Target "Deploy" (fun _ ->
-    DeleteDir (applicationOutput @@ "bin" )
-    CopyRecursive webBuildPath applicationOutput true
-    |> Log "Files copied: "
-    System.Diagnostics.Process.Start("http://localhost:81/index.html") |> ignore
-)
-
-"Clean"
-   ==> "BuildServer"
-   ==> "Deploy"
-   ==> "ServerDev"
 
 "BuildClient"
   ==> "Browserify"
-  ==> "ClientDev"
-  ==> "CopyClientToBuildDir"
-  ==> "Deploy"
+  ==> "Default"
 
-RunTargetOrDefault "Deploy"
+"BuildServer"
+  ==> "Default"
+
+RunTargetOrDefault "Default"

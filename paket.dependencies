@@ -4,18 +4,9 @@ nuget FAKE
 nuget FAKE.IIS
 nuget FunScript
 nuget FunScript.TypeScript.Binding.jquery
-nuget FunScript.TypeScript.Binding.signalr
 nuget MSBuild.Extension.Pack
-nuget Microsoft.AspNet.SignalR.Core
-nuget Microsoft.AspNet.SignalR.SystemWeb
-nuget Microsoft.AspNet.WebApi.Client
-nuget Microsoft.AspNet.WebApi.Core
-nuget Microsoft.AspNet.WebApi.Owin
-nuget Microsoft.Owin
-nuget Microsoft.Owin.Cors
-nuget Microsoft.Owin.Host.SystemWeb
 nuget Newtonsoft.Json
-nuget Owin
 nuget FSharp.Core
+nuget Suave 0.28.1 framework: >= net45
 nuget rethinkdb-net
 nuget rethinkdb-net-newtonsoft

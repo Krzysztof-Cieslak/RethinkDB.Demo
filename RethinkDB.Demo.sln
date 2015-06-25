@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{63297B
 		paket.lock = paket.lock
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RethinkDB.Demo.Server", "RethinkDB.Demo.Server\RethinkDB.Demo.Server.fsproj", "{EE5A993E-7507-4BD0-A7BC-8E0569F1E032}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RethinkDB.Demo.Suave", "RethinkDB.Demo.Server\RethinkDB.Demo.Suave.fsproj", "{EE5A993E-7507-4BD0-A7BC-8E0569F1E032}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RethinkDB.Demo.Client", "RethinkDB.Demo.Client\RethinkDB.Demo.Client.fsproj", "{FC057A15-ABE8-40DA-AF9E-A7E0089AB8F2}"
 EndProject

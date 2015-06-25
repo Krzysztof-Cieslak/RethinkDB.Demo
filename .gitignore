@@ -199,3 +199,4 @@ FakesAssemblies/
 app.js
 client.js
 docker.info
+RethinkDB.Demo.App/*.*

@@ -5,7 +5,6 @@ open System.Collections.Generic
 open FunScript
 open FunScript.TypeScript
 open FunScript.TypeScript.React
-open RethinkDB.Demo.Server
 
 [<ReflectedDefinition>]
 module Helpers =
@@ -24,7 +23,7 @@ module Helpers =
         let t = Dictionary<string,obj>()
         lst |> List.iter(fun i -> t.Add(fst i, snd i ))
         t
-    
+
     let (==>) a b = a, box<obj> b
 
     module React =
