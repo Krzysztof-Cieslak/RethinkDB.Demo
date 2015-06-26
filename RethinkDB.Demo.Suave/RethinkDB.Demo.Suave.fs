@@ -16,10 +16,41 @@ open Suave.Sockets
 open Suave.Sockets.Control
 open Suave.WebSocket
 
+open RethinkDb
+open RethinkDb.Newtonsoft.Configuration
+open Newtonsoft.Json
+
 open System.Collections.Generic
 
+module RethinkDB =
+    type Message = {
+        id: string
+        date: string
+        nick: string
+        message : string
+      }
+
+    let connection () =
+        let connectionFactory = ConfigurationAssembler.CreateConnectionFactory("example");
+        connectionFactory.Get()
+
+    let registerBroadcaster handler = async {
+        let conn = connection ()
+        Query.Db("test").Table("Messages").Changes()
+        |> conn.StreamChangesAsync
+        |> handler }
+
+    let saveMessage (msg : Message) =
+        let conn = connection ()
+        Query.Db("test").Table<Message>("Messages").Insert( msg )
+        |> conn.Run
+        |> ignore
+
+
 module Suave =
-    let clients = List()
+    let private clients = List()
+
+    type MessageDto = {Date : System.DateTime; Text : string; Author : string }
 
     let echo (webSocket : WebSocket) =
         fun cx ->
@@ -30,10 +61,12 @@ module Suave =
                     let! msg = webSocket.read()
                     match msg with
                     | (Text, data, true) ->
-                        let str = UTF8.toString data
-                        clients
-                        |> Seq.where ((<>) webSocket )
-                        |> Seq.iter (fun w ->  w.send Text data true |> Async.Ignore |> Async.Start)
+
+                        data
+                        |> UTF8.toString
+                        |> fun n -> JsonConvert.DeserializeObject<MessageDto>(n)
+                        |> fun n -> {RethinkDB.id = System.Guid.NewGuid().ToString(); RethinkDB.message = n.Text; RethinkDB.date = n.Date.ToString(); RethinkDB.nick = n.Author}
+                        |> RethinkDB.saveMessage
                     | (Ping, _, _) -> do! webSocket.send Pong [||] true
                     | (Close, _, _) ->
                         do! webSocket.send Close [||] true
@@ -42,14 +75,28 @@ module Suave =
                     | _ -> ()
                 }
 
+    let sendAll msg =
+        let msg' = JsonConvert.SerializeObject msg |> UTF8.bytes
+        clients |> Seq.iter (fun w ->  w.send Text msg' true |> Async.Ignore |> Async.Start)
+        ()
+
     let app : WebPart =
         choose [ path "/websocket" >>= handShake echo
-                 GET >>= choose [ path "/" >>= request(fun n -> printfn "%A" n.ipaddr
-                                                                file "index.html")
+                 GET >>= choose [ path "/" >>= file "index.html"
                                   browseHome ]
                  NOT_FOUND "Found no handlers." ]
 
+    let rec private handler (enumerator : IAsyncEnumerator<DmlResponseChange<_>>) =
+        enumerator.MoveNext().Wait()
+        enumerator.Current.NewValue
+        |> fun (n : RethinkDB.Message) ->
+            {Date = DateTime.Parse n.date; Text = n.message; Author = n.nick }
+        |> sendAll
+        handler enumerator
+        ()
+
     [<EntryPoint>]
     let main _ =
+        RethinkDB.registerBroadcaster handler |> Async.Start
         startWebServer { defaultConfig with logger = Loggers.ConsoleWindowLogger LogLevel.Verbose} app
         0

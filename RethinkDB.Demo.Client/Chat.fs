@@ -43,16 +43,6 @@ module Chat =
         )
 
     let private registerHandlers (cb : Chat) =
-        let options = createEmpty<PostalSubscriptionDefinition>()
-                      |> fun n -> n.topic <- "message.new"
-                                  n.callback <- Func<_,_,_>(fun n msg ->
-                                      msg.data
-                                      |> unbox<Message.MessageProps>
-                                      |> handle cb )
-                                  n
-        let t = Globals.postal.subscribe(options)
-        subscriptions.Add t
-
         let options2 = createEmpty<PostalSubscriptionDefinition>()
                       |> fun n -> n.topic <- "message.recived"
                                   n.callback <- Func<_,_,_>(fun n msg ->
@@ -60,8 +50,8 @@ module Chat =
                                       |> unbox<Message.MessageProps>
                                       |> handle cb )
                                   n
-        let t2 = Globals.postal.subscribe(options2)
-        subscriptions.Add t2
+        let t = Globals.postal.subscribe(options2)
+        subscriptions.Add t
 
     let private unregisterHandlers () =
         subscriptions |> Seq.iter (fun s -> s.unsubscribe() |> ignore)
