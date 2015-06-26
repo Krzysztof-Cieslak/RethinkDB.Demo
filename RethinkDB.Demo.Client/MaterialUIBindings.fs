@@ -134,23 +134,3 @@ module Extensions =
         member __.getValue() : obj = failwith "never"
         [<FunScript.JSEmitInline("({0}.setValue({1}))");>]
         member __.setValue(o: obj) : unit = failwith "never"
-
-//module MaterialUI =
-//    let mutable private mui : Mui.mui option = None
-//    let mutable private tm : Mui.ThemeManager option = None
-//
-//    let MaterialUI () =
-//        if mui.IsSome then
-//            mui.Value
-//        else
-//            let m = JS.require<Mui.mui> "material-ui"
-//            mui <- Some m
-//            m
-//
-//    let ThemeManager () =
-//        if tm.IsSome then
-//            tm.Value
-//        else
-//            let m = (MaterialUI ()).Styles.ThemeManager()
-//            tm <- Some m
-//            m

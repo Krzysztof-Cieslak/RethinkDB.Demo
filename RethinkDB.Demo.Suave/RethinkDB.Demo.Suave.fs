@@ -31,13 +31,13 @@ module Suave =
                     match msg with
                     | (Text, data, true) ->
                         let str = UTF8.toString data
-                        printfn "%s" str
-                        clients |> Seq.iter (fun w -> 
-                            w.send Text data true |> Async.Ignore |> Async.Start
-                        )
+                        clients
+                        |> Seq.where ((<>) webSocket )
+                        |> Seq.iter (fun w ->  w.send Text data true |> Async.Ignore |> Async.Start)
                     | (Ping, _, _) -> do! webSocket.send Pong [||] true
                     | (Close, _, _) ->
                         do! webSocket.send Close [||] true
+                        clients.Remove webSocket |> ignore
                         loop := false
                     | _ -> ()
                 }

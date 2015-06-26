@@ -9,9 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{63297B
 		paket.lock = paket.lock
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RethinkDB.Demo.Suave", "RethinkDB.Demo.Server\RethinkDB.Demo.Suave.fsproj", "{EE5A993E-7507-4BD0-A7BC-8E0569F1E032}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RethinkDB.Demo.Client", "RethinkDB.Demo.Client\RethinkDB.Demo.Client.fsproj", "{FC057A15-ABE8-40DA-AF9E-A7E0089AB8F2}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RethinkDB.Demo.Suave", "RethinkDB.Demo.Suave\RethinkDB.Demo.Suave.fsproj", "{D18F1434-4F0E-40BB-A852-3CC26F672580}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +19,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EE5A993E-7507-4BD0-A7BC-8E0569F1E032}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE5A993E-7507-4BD0-A7BC-8E0569F1E032}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE5A993E-7507-4BD0-A7BC-8E0569F1E032}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE5A993E-7507-4BD0-A7BC-8E0569F1E032}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC057A15-ABE8-40DA-AF9E-A7E0089AB8F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC057A15-ABE8-40DA-AF9E-A7E0089AB8F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC057A15-ABE8-40DA-AF9E-A7E0089AB8F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC057A15-ABE8-40DA-AF9E-A7E0089AB8F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D18F1434-4F0E-40BB-A852-3CC26F672580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D18F1434-4F0E-40BB-A852-3CC26F672580}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D18F1434-4F0E-40BB-A852-3CC26F672580}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D18F1434-4F0E-40BB-A852-3CC26F672580}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

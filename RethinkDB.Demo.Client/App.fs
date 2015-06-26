@@ -25,14 +25,25 @@ module App =
 
     let registerWebSocket () =
         let ws = Globals.WebSocket.Create "ws://localhost:8083/websocket"
-        ws.addEventListener_message(fun e -> Globals.console.log e :> obj)
+        ws.addEventListener_message(fun e ->
+            let e' = e |> unbox<MessageEvent>
+            createEmpty<PostalEnvelope> ()
+            |> fun n ->
+                n.topic <- "message.recived"
+                n.data <- e'.data.ToString()
+                          |> Globals.JSON.parse
+                          |> unbox<Message.MessageProps>
+                          |> fun d -> {d with Date = DateTime.Parse(d.Date |> unbox<string>)}
+                n
+            |> Globals.postal.publish
+            |> ignore :> obj)
 
         let options = createEmpty<PostalSubscriptionDefinition>()
                       |> fun n -> n.topic <- "message.new"
                                   n.callback <- Func<_,_,_>(fun n msg ->
                                       msg.data
                                       |> unbox<Message.MessageProps>
-                                      |> fun a -> a |> Globals.JSON.stringify |> ws.send 
+                                      |> fun a -> a |> Globals.JSON.stringify |> ws.send
                                       |> ignore :> obj)
                                   n
         Globals.postal.subscribe(options)  |> ignore
